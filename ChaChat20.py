@@ -124,8 +124,9 @@ def create_secondary_window(parent):
     display_area.tag_config("you", foreground="blue")
     display_area.tag_config("other", foreground="green")
     display_area.tag_config("decrypted", foreground="orange")
+    display_area.tag_config("bold", font="Courier 12 bold")
 
-    display_area.insert(tk.END, "The message ID is enclosed with [ ]\n")
+    display_area.insert(tk.END, "     The message ID is enclosed with [ ]\n", "bold")
     display_area.pack(pady=10)
 
     # Text entry field with a send button at the bottom
@@ -180,8 +181,9 @@ display_area_main = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=56, heig
 display_area_main.tag_config("you", foreground="blue")
 display_area_main.tag_config("other", foreground="green")
 display_area_main.tag_config("decrypted", foreground="orange")
+display_area_main.tag_config("bold", font="Courier 12 bold")
 
-display_area_main.insert(tk.END, "The message ID is enclosed with [ ]\n")
+display_area_main.insert(tk.END, "     The message ID is enclosed with [ ]\n", "bold")
 display_area_main.pack(pady=10)
 
 # Text entry field with a send button at the bottom of the main window
