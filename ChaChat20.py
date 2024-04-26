@@ -115,7 +115,7 @@ def create_secondary_window(parent):
     secondary_window.geometry("500x582")
 
     # Scrolled text area to display messages
-    display_area = scrolledtext.ScrolledText(secondary_window, wrap=tk.WORD, width=50, height=25)
+    display_area = scrolledtext.ScrolledText(secondary_window, wrap=tk.WORD, width=58, height=25)
     display_area.pack(pady=20)
 
     # Text entry field with a send button at the bottom
@@ -124,6 +124,7 @@ def create_secondary_window(parent):
 
     text_entry = ttk.Entry(bottom_frame, width=25)
     text_entry.pack(side=tk.LEFT, padx=5)
+    text_entry.bind("<Return>", lambda event: send_message(text_entry, display_area, display_area_main, secret_key_2, encryption_enabled))
 
     # The send button sends messages to the main window's display area
     send_button = ttk.Button(
@@ -165,7 +166,7 @@ root.title("Person #1")
 root.geometry("500x582")
 
 # Scrolled text area to display messages in the main window
-display_area_main = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=45, height=25)
+display_area_main = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=58, height=25)
 display_area_main.pack(pady=20)
 
 # Text entry field with a send button at the bottom of the main window
@@ -174,6 +175,7 @@ bottom_frame_main.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=10)
 
 text_entry_main = ttk.Entry(bottom_frame_main, width=25)
 text_entry_main.pack(side=tk.LEFT, padx=5)
+text_entry_main.bind("<Return>", lambda event: send_message(text_entry_main, display_area_main, display_area_secondary, secret_key_1, encryption_enabled))
 
 # The send button sends messages to the secondary window's display area
 send_button_main = ttk.Button(
