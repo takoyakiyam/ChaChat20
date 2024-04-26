@@ -112,7 +112,7 @@ def decrypt_message_by_id(display_area):
 def create_secondary_window(parent):
     secondary_window = tk.Toplevel(parent)
     secondary_window.title("Person #2")
-    secondary_window.geometry("450x550")
+    secondary_window.geometry("500x582")
 
     # Scrolled text area to display messages
     display_area = scrolledtext.ScrolledText(secondary_window, wrap=tk.WORD, width=50, height=25)
@@ -162,7 +162,7 @@ def create_secondary_window(parent):
 # Create the main application window (Person #1)
 root = tk.Tk()
 root.title("Person #1")
-root.geometry("450x550")
+root.geometry("500x582")
 
 # Scrolled text area to display messages in the main window
 display_area_main = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=45, height=25)
