@@ -37,6 +37,8 @@ def decrypt_message(key, nonce, encrypted_data):
 def send_message(entry_field, sender_display, receiver_display, key, encryption_enabled):
     global message_counter
     message = entry_field.get()
+
+
     if not message:
         return  # No message to send
 
@@ -56,13 +58,13 @@ def send_message(entry_field, sender_display, receiver_display, key, encryption_
         }
 
         # Display the encrypted message in the receiver's display area with the ID
-        receiver_display.insert(tk.END, f"Message {message_id} (Encrypted): {encrypted_message[12:].hex()}\n")
+        receiver_display.insert(tk.END, f"\nMessage {message_id} (Encrypted): {encrypted_message[12:].hex()}\n")
     else:
         # If encryption is not enabled, just send the plain text
-        receiver_display.insert(tk.END, f"You: {message}\n")
+        receiver_display.insert(tk.END, f"\nYou: {message}\n")
 
     # Display the original message in the sender's display area
-    sender_display.insert(tk.END, f"You: {message}\n")
+    sender_display.insert(tk.END, f"\nYou: {message}\n")
 
     # Clear the entry field
     entry_field.delete(0, tk.END)
@@ -98,7 +100,7 @@ def decrypt_message_by_id(display_area):
                     custom_key = bytes.fromhex(custom_key_hex)
                     decrypted_message = decrypt_message(custom_key, nonce, encrypted_data)
                     # Display the decrypted message
-                    display_area.insert(tk.END, f"Decrypted (Message {message_id}): {decrypted_message}\n")
+                    display_area.insert(tk.END, f"Message {message_id} (Decrypted): {decrypted_message}\n")
                 except ValueError:
                     messagebox.showerror("Invalid Key", "The provided key is not valid hexadecimal.")
             else:
@@ -112,15 +114,15 @@ def decrypt_message_by_id(display_area):
 def create_secondary_window(parent):
     secondary_window = tk.Toplevel(parent)
     secondary_window.title("Person #2")
-    secondary_window.geometry("500x582")
+    secondary_window.geometry("500x482")
 
     # Scrolled text area to display messages
-    display_area = scrolledtext.ScrolledText(secondary_window, wrap=tk.WORD, width=58, height=25)
-    display_area.pack(pady=20)
+    display_area = scrolledtext.ScrolledText(secondary_window, wrap=tk.WORD, width=56, height=25)
+    display_area.pack(pady=10)
 
     # Text entry field with a send button at the bottom
     bottom_frame = ttk.Frame(secondary_window)
-    bottom_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=10)
+    bottom_frame.pack(fill=tk.X, padx=10, pady=10)
 
     text_entry = ttk.Entry(bottom_frame, width=25)
     text_entry.pack(side=tk.LEFT, padx=5)
@@ -163,15 +165,15 @@ def create_secondary_window(parent):
 # Create the main application window (Person #1)
 root = tk.Tk()
 root.title("Person #1")
-root.geometry("500x582")
+root.geometry("500x482")
 
 # Scrolled text area to display messages in the main window
-display_area_main = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=58, height=25)
-display_area_main.pack(pady=20)
+display_area_main = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=56, height=25)
+display_area_main.pack(pady=10)
 
 # Text entry field with a send button at the bottom of the main window
 bottom_frame_main = ttk.Frame(root)
-bottom_frame_main.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=10)
+bottom_frame_main.pack(fill=tk.X, padx=10, pady=10)
 
 text_entry_main = ttk.Entry(bottom_frame_main, width=25)
 text_entry_main.pack(side=tk.LEFT, padx=5)
