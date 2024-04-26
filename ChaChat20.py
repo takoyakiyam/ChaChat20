@@ -130,7 +130,7 @@ def create_secondary_window(parent):
     send_button = ttk.Button(
         bottom_frame, text="Send", command=lambda: send_message(text_entry, display_area, display_area_main, secret_key_2, encryption_enabled)
     )
-    send_button.pack(side=tk.RIGHT)
+    send_button.pack(side=tk.LEFT)
 
     # Button to display nonce for a specific message and copy to clipboard
     nonce_display_button = ttk.Button(
@@ -181,7 +181,7 @@ text_entry_main.bind("<Return>", lambda event: send_message(text_entry_main, dis
 send_button_main = ttk.Button(
     bottom_frame_main, text="Send", command=lambda: send_message(text_entry_main, display_area_main, display_area_secondary, secret_key_1, encryption_enabled)
 )
-send_button_main.pack(side=tk.RIGHT)
+send_button_main.pack(side=tk.LEFT)
 
 # Button to display and copy the current secret key for the main window
 key_display_button_main = ttk.Button(
