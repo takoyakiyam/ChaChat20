@@ -38,7 +38,6 @@ def send_message(entry_field, sender_display, receiver_display, key, encryption_
     global message_counter
     message = entry_field.get()
 
-
     if not message:
         return  # No message to send
 
@@ -58,13 +57,17 @@ def send_message(entry_field, sender_display, receiver_display, key, encryption_
         }
 
         # Display the encrypted message in the receiver's display area with the ID
-        receiver_display.insert(tk.END, f"\nMessage {message_id} (Encrypted): {encrypted_message[12:].hex()}\n")
+        receiver_display.insert(
+            tk.END,
+            f"Other[{message_id}] (Encrypted): {encrypted_message[12:].hex()}\n",
+            "other",
+        )
     else:
         # If encryption is not enabled, just send the plain text
-        receiver_display.insert(tk.END, f"\nYou: {message}\n")
+        receiver_display.insert(tk.END, f"You: {message}\n", "other")
 
     # Display the original message in the sender's display area
-    sender_display.insert(tk.END, f"\nYou: {message}\n")
+    sender_display.insert(tk.END, f"You: {message}\n", "you")
 
     # Clear the entry field
     entry_field.delete(0, tk.END)
@@ -75,7 +78,6 @@ def display_nonce():
     if message_id is not None:
         nonce = message_data.get(message_id, {}).get("nonce")
         if nonce is not None:
-            # Copy the nonce to the clipboard
             root.clipboard_clear()
             root.clipboard_append(nonce.hex())
             messagebox.showinfo("Nonce Information", f"Nonce for message {message_id}: {nonce.hex()} (Nonce copied to clipboard)")
@@ -99,8 +101,8 @@ def decrypt_message_by_id(display_area):
                 try:
                     custom_key = bytes.fromhex(custom_key_hex)
                     decrypted_message = decrypt_message(custom_key, nonce, encrypted_data)
-                    # Display the decrypted message
-                    display_area.insert(tk.END, f"Message {message_id} (Decrypted): {decrypted_message}\n")
+                    # Display the decrypted message with 'decrypted' text tag
+                    display_area.insert(tk.END, f"Other[{message_id}] (Decrypted): {decrypted_message}\n", "decrypted")
                 except ValueError:
                     messagebox.showerror("Invalid Key", "The provided key is not valid hexadecimal.")
             else:
@@ -118,6 +120,12 @@ def create_secondary_window(parent):
 
     # Scrolled text area to display messages
     display_area = scrolledtext.ScrolledText(secondary_window, wrap=tk.WORD, width=56, height=25)
+    # Add text tags for different users
+    display_area.tag_config("you", foreground="blue")
+    display_area.tag_config("other", foreground="green")
+    display_area.tag_config("decrypted", foreground="orange")
+
+    display_area.insert(tk.END, "The message ID is enclosed with [ ]\n")
     display_area.pack(pady=10)
 
     # Text entry field with a send button at the bottom
@@ -169,6 +177,11 @@ root.geometry("500x482")
 
 # Scrolled text area to display messages in the main window
 display_area_main = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=56, height=25)
+display_area_main.tag_config("you", foreground="blue")
+display_area_main.tag_config("other", foreground="green")
+display_area_main.tag_config("decrypted", foreground="orange")
+
+display_area_main.insert(tk.END, "The message ID is enclosed with [ ]\n")
 display_area_main.pack(pady=10)
 
 # Text entry field with a send button at the bottom of the main window
