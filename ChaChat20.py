@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import scrolledtext, simpledialog, messagebox
 from tkinter import ttk
 from Crypto.Cipher import ChaCha20
+from datetime import datetime
+import pandas as pd 
 import os
 
 # Sample user data with hashed passwords for simplicity (in a real application, store passwords securely)
@@ -36,7 +38,7 @@ def decrypt_message(key, nonce, encrypted_data):
     except Exception:
         return "Decryption Failed: Incorrect Key or Nonce"
 
-def send_message(entry_field, sender_display, receiver_display, key, encryption_enabled):
+def send_message(entry_field, sender_display, receiver_display, key, encryption_enabled, sender):
     global message_counter
     message = entry_field.get()
 
@@ -51,9 +53,10 @@ def send_message(entry_field, sender_display, receiver_display, key, encryption_
         nonce = encrypted_message[:12]  # Get the nonce used
 
         message_data[message_id] = {
-            "nonce": nonce,
-            "encrypted": encrypted_message[12:]
-        }
+        "sender": sender,
+        "nonce": nonce,
+        "encrypted": encrypted_message[12:]
+    }
 
         receiver_display.insert(
             tk.END,
@@ -66,6 +69,7 @@ def send_message(entry_field, sender_display, receiver_display, key, encryption_
     sender_display.insert(tk.END, f"You: {message}\n", "you")
 
     entry_field.delete(0, tk.END)
+
 
 # Function to display the nonce for a specific message ID and copy to clipboard
 def display_nonce(root):
@@ -168,12 +172,12 @@ def create_secondary_window(parent, display_area_main):
    text_entry = ttk.Entry(bottom_frame, width=25)
    text_entry.pack(side=tk.LEFT, padx=5)
    text_entry.bind("<Return>", lambda event: send_message(text_entry, display_area, display_area_main, secret_key_2,
-                                                          encryption_enabled))
+                                                          encryption_enabled, sender = 2))
 
 
    send_button = ttk.Button(
        bottom_frame, text="Send",
-       command=lambda: send_message(text_entry, display_area, display_area_main, secret_key_2, encryption_enabled)
+       command=lambda: send_message(text_entry, display_area, display_area_main, secret_key_2, encryption_enabled, sender = 2)
    )
    send_button.pack(side=tk.LEFT)
 
@@ -228,10 +232,10 @@ def open_main_window():
 
     text_entry_main = ttk.Entry(bottom_frame_main, width=25)
     text_entry_main.pack(side=tk.LEFT, padx=5)
-    text_entry_main.bind("<Return>", lambda event: send_message(text_entry_main, display_area_main, display_area_secondary, secret_key_1, encryption_enabled))
+    text_entry_main.bind("<Return>", lambda event: send_message(text_entry_main, display_area_main, display_area_secondary, secret_key_1, encryption_enabled, sender=1))
 
     send_button_main = ttk.Button(
-        bottom_frame_main, text="Send", command=lambda: send_message(text_entry_main, display_area_main, display_area_secondary, secret_key_1, encryption_enabled)
+        bottom_frame_main, text="Send", command=lambda: send_message(text_entry_main, display_area_main, display_area_secondary, secret_key_1, encryption_enabled, sender = 1)
     )
     send_button_main.pack(side=tk.LEFT)
 
@@ -258,7 +262,29 @@ def open_main_window():
 
     display_area_secondary = create_secondary_window(root, display_area_main)
 
+    # Connect the on_closing function to the main window's closing event
+    root.protocol("WM_DELETE_WINDOW", lambda: on_closing(root))
+
     root.mainloop()
+
+from datetime import datetime
+
+def on_closing(root):
+    print("Closing window...")
+    # Get current date and time
+    current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    # Construct Excel file name with current date and time
+    excel_file_name = f"messages_{current_datetime}.xlsx"
+    # Convert message_data to DataFrame including message content and sender
+    df = pd.DataFrame.from_dict(message_data, orient='index', columns=['sender', 'encrypted'])
+    # Include the message content in the DataFrame
+    df['message'] = [decrypt_message(secret_key_1, message_info["nonce"], message_info["encrypted"]) if message_info["sender"] == 1 else decrypt_message(secret_key_2, message_info["nonce"], message_info["encrypted"]) for message_info in message_data.values()]
+    # Remove any rows where decryption failed
+    df = df[df['message'] != "Decryption Failed: Incorrect Key or Nonce"]
+    # Export DataFrame to Excel file with current date and time in the name
+    df.to_excel(excel_file_name, index_label='message_id')
+    print(f"Excel file saved as {excel_file_name}.")
+    root.destroy()  # Close the window
 
 # Start the application with a login window
 root_login = tk.Tk()
